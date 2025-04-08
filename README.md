@@ -41,4 +41,8 @@ python ImageToMusic.py -d .5 path/to/example_image.png
 
 This will generate an MP3 file named `output.mp3` based on the pixel data of `example_image.png`. The mod is .5 so the notes will be half the normal length
 
+### Notes
 I recomend using a very low mod value for large images as the processing time might be high.
+Images around 640x640 will take around a minute and a half to generate with the default note lenght.
+
+
