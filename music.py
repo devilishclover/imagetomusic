@@ -1,9 +1,9 @@
 import numpy as np
 import simpleaudio as sa
-from time import sleep
 from scipy import signal
 from pydub import AudioSegment
 from pydub.generators import Sine, Square, Sawtooth
+
 note_frequencies = {
             'C0': 16.35, 'C#0': 17.32, 'D0': 18.35, 'D#0': 19.45, 'E0': 20.60, 'F0': 21.83, 'F#0': 23.12, 'G0': 24.50, 'G#0': 25.96, 'A0': 27.50, 'A#0': 29.14, 'B0': 30.87,
             'C1': 32.70, 'C#1': 34.65, 'D1': 36.71, 'D#1': 38.89, 'E1': 41.20, 'F1': 43.65, 'F#1': 46.25, 'G1': 49.00, 'G#1': 51.91, 'A1': 55.00, 'A#1': 58.27, 'B1': 61.74,
@@ -17,61 +17,68 @@ note_frequencies = {
         }
 
 def play_note(length, wave_type, note, duration):
-    frequency = note_frequencies.get(note, 440.00)
-    
-    if wave_type == 'sine':
-        wave = generate_sine_wave(frequency=frequency, duration=duration, volume=length)
-    elif wave_type == 'saw':
-        wave = generate_saw_wave(frequency=frequency, duration=duration, volume=length)
-    elif wave_type == 'square':
-        wave = generate_square_wave(frequency=frequency, duration=duration, volume=length)
-    else:
+    frequency = note_frequencies.get(note, 440.00) if isinstance(note, str) else note if isinstance(note, (int, float)) else None
+    if frequency is None:
+        print("Invalid note type. Please use a string (e.g., 'C4') or a number (frequency in Hz).")
+        return
+
+    wave_generators = {
+        'sine': generate_sine_wave,
+        'saw': generate_saw_wave,
+        'square': generate_square_wave
+    }
+
+    if wave_type not in wave_generators:
         print("Unsupported wave type. Please use 'sine', 'saw', or 'square'.")
         return
 
+    wave = wave_generators[wave_type](frequency=frequency, duration=duration, volume=length)
     play_audio(wave)
 
-def generate_sine_wave(frequency, duration, volume):
+def generate_wave(frequency, duration, volume, wave_func):
     sample_rate = 44100
     t = np.linspace(0, duration, int(sample_rate * duration), False)
-    note = np.sin(2 * np.pi * frequency * t)
+    note = wave_func(2 * np.pi * frequency * t)
     return (note * (2**15 - 1) * volume).astype(np.int16)
+
+def generate_sine_wave(frequency, duration, volume):
+    return generate_wave(frequency, duration, volume, np.sin)
 
 def generate_saw_wave(frequency, duration, volume):
-    sample_rate = 44100
-    t = np.linspace(0, duration, int(sample_rate * duration), False)
-    note = signal.sawtooth(2 * np.pi * frequency * t)
-    return (note * (2**15 - 1) * volume).astype(np.int16)
+    return generate_wave(frequency, duration, volume, signal.sawtooth)
 
 def generate_square_wave(frequency, duration, volume):
-    sample_rate = 44100
-    t = np.linspace(0, duration, int(sample_rate * duration), False)
-    note = signal.square(2 * np.pi * frequency * t)
-    return (note * (2**15 - 1) * volume).astype(np.int16)
+    return generate_wave(frequency, duration, volume, signal.square)
 
 def play_audio(audio):
     sample_rate = 44100
-    play_obj = sa.play_buffer(audio, 1, 2, sample_rate)
-    play_obj.wait_done()
-
+    sa.play_buffer(audio, 1, 2, sample_rate).wait_done()
 
 def export_mp3(song, filename="output.mp3"):
+    from tqdm import tqdm  # Import tqdm for the progress bar
+
     sample_rate = 44100
     combined = AudioSegment.silent(duration=0)
-    for note, duration, wave_type in song:
+
+    print("Exporting song to MP3...")
+    for note, duration, wave_type in tqdm(song, desc="Processing notes", unit="note"):
         frequency = note_frequencies.get(note, 440.00)
         duration_ms = int(duration * 1000)
-        if wave_type == "sine":
-            wave = Sine(frequency).to_audio_segment(duration=duration_ms)
-        elif wave_type == "saw":
-            wave = Sawtooth(frequency).to_audio_segment(duration=duration_ms)
-        elif wave_type == "square":
-            wave = Square(frequency).to_audio_segment(duration=duration_ms)
-        else:
+        wave_generators = {
+            "sine": Sine,
+            "saw": Sawtooth,
+            "square": Square
+        }
+
+        if wave_type not in wave_generators:
             print(f"Unsupported wave type: {wave_type}")
             continue
+
+        wave = wave_generators[wave_type](frequency).to_audio_segment(duration=duration_ms)
         combined += wave
+
     combined.export(filename, format="mp3")
+    print(f"Export completed: {filename}")
 
 if __name__ == "__main__":
     # example 
