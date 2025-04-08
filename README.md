@@ -1,6 +1,6 @@
-# IMAGE TO MUSIC
+# IMAGE TO "MUSIC"
 
-ImageToMusic is a Python-based tool that converts images into music by mapping pixel data to sound frequencies, durations, and waveforms. The resulting audio is exported as an MP3 file.
+ImageToMusic is a Python-based tool that converts images into "music" by mapping pixel data to sound frequencies, durations, and waveforms. The resulting audio is exported as an MP3 file.
 
 ## Installation
 
