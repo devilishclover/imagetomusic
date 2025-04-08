@@ -45,6 +45,7 @@ This will generate an MP3 file named `output.mp3` based on the pixel data of `ex
 * Larger images take longer to generate.
 * Images with more colors will take longer to generate. 
 * I recomend using a very low mod value for large images as the processing time will be high.
+* these are not good songs, dont get your hopes up or anything lol
 
 
 
