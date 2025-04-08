@@ -23,7 +23,7 @@ Run the script with the following command:
 python ImageToMusic.py <image_file>
 ```
 
-### Optional Modulation
+### Optional Modifier
 
 You can adjust the duration of the notes using the `-d` flag:
 
