@@ -55,7 +55,7 @@ def play_audio(audio):
     sa.play_buffer(audio, 1, 2, sample_rate).wait_done()
 
 def export_mp3(song, filename="output.mp3"):
-    from tqdm import tqdm  # Import tqdm for the progress bar
+    from tqdm import tqdm
 
     sample_rate = 44100
     combined = AudioSegment.silent(duration=0)

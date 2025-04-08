@@ -4,11 +4,23 @@ from PIL import Image
 from random import randint
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <image_file path>")
+    mod = 1
+    args = sys.argv[1:]
+
+    if len(args) < 1:
+        print("Usage: python ImageToMusic.py <image_file>")
         sys.exit(1)
 
-    image_file = sys.argv[1]
+    if args[0] == "-d" :
+        mod = float(args[1])
+        args = args[2:]
+
+    if len(args) < 1:
+        print("Usage: python -d mod ImageToMusic.py <image_file>")
+        sys.exit(1)
+        
+
+    image_file = args[0]
     song = []
 
     with Image.open(image_file) as img:
@@ -23,7 +35,7 @@ def main():
 
         for pixel in pixel_list:
             frequency = 440.0 + pixel[0] % 1000
-            duration = 0.025 + (pixel[1] % 100) / 1000.0
+            duration = (0.025 + (pixel[1] % 100) / 1000.0) * mod
             waveform = ["saw", "square", "sine"][pixel[2] % 3]
             song.append((frequency, duration, waveform))
             
