@@ -7,7 +7,7 @@ ImageToMusic is a Python-based tool that converts images into "music" by mapping
 1. Clone the repository:
      ```bash
      git clone https://github.com/devilishclover/imagetomusic
-     cd FractalMusic
+     cd imagetomusic
      ```
 
 2. Install the required dependencies:
